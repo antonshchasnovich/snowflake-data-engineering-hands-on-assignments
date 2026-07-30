@@ -30,6 +30,22 @@
   - **Scaling policy** (for multi-cluster): `STANDARD` vs `ECONOMY` — controls how aggressively extra clusters are spun up/down
   - **Billing:** credits consumed **per second**, with a **60-second minimum** each time the warehouse starts/resumes
 
+## 1.3 Stages and Basic Ingestion
+
+- **Definition:** An intermediate storage location between an external data source and Snowflake internal storage, used to stage files before loading (or after unloading) data.
+- **Common use case:** Ingesting data from cloud blob storage such as **Amazon S3**, Azure Blob Storage, or Google Cloud Storage.
+- **Creation:** Via the web interface (Snowsight) or programmatically with SQL: `CREATE STAGE`.
+- **Types of stages:**
+  - **User stage** (`@~`) – automatically created for each user; private, personal storage; can't be altered or dropped.
+  - **Table stage** (`@%table_name`) – automatically created for each table; used to load/unload data only for that specific table.
+  - **Named stage** – manually created database object (internal or external); most flexible option, can be shared across multiple users/tables and referenced by name.
+- **Internal vs. external:**
+  - **Internal stage:** files stored within Snowflake-managed storage.
+  - **External stage:** references files stored outside Snowflake (e.g. S3 bucket), typically set up via a **storage integration**.
+- **Loading data:** Use `PUT` to upload local files to an internal stage, then `COPY INTO <table>` to load staged files into a table.
+- **Unloading data:** `COPY INTO <stage>` to export table data out to a stage.
+- **File management commands:** `LIST` (view files in a stage), `REMOVE` (delete files from a stage).
+
 # 2 Snowflake Feature Overview
 
 ## 2.1 Time Travel
