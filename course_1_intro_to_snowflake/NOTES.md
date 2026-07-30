@@ -1,4 +1,36 @@
-# 2.1 Snowflake Feature Overview
+# 1 Intro to Snowflake
+
+## 1.1 Worksheets
+
+- **Definition:** One of the main ways to interact with data through the Snowsight GUI.
+- **Purpose:** Write, edit, and run **SQL queries** directly in the browser.
+- **Other features:**
+  - Support for **Python** (via Snowpark) in addition to SQL, depending on worksheet type
+  - Results are displayed in a grid, with options to view **query details**, **execution time**, and **query profile** (visual breakdown of how the query ran)
+  - Can be **organized into folders** and shared with other users/roles
+  - Support for **variables** (e.g. session variables) within a worksheet
+  - Ability to **import a `.sql` file** or create a worksheet from an existing one
+  - Charting/visualization option to turn query results into simple charts
+  - Can be tied to a specific **role, warehouse, and database/schema context**, selectable from the worksheet UI
+
+## 1.2 Virtual Warehouses
+
+- **Definition:** An abstraction/representation of compute resources used to execute queries and load/unload data.
+- **Underlying structure:** Every warehouse runs on a **cluster** of compute nodes (servers).
+- **Creation/management:** Via the **web interface (Snowsight)** or programmatically with SQL: `CREATE WAREHOUSE` / `ALTER WAREHOUSE`.
+- **Scaling:**
+  - **Vertical scaling:** Resize the warehouse to a bigger/smaller **size** (`X-Small` → `6X-Large`) to change the power of a single cluster.
+  - **Horizontal scaling:** Use a **multi-cluster warehouse** to add more clusters running in parallel, handling more concurrent queries/users.
+- **Selecting a warehouse for use:**
+  - Manually, by picking it in the UI context selector
+  - Programmatically with `USE WAREHOUSE <name>`
+- **Other settings:**
+  - **Auto-suspend:** automatically pauses the warehouse after a period of inactivity to save credits
+  - **Auto-resume:** automatically starts the warehouse when a new query is submitted
+  - **Scaling policy** (for multi-cluster): `STANDARD` vs `ECONOMY` — controls how aggressively extra clusters are spun up/down
+  - **Billing:** credits consumed **per second**, with a **60-second minimum** each time the warehouse starts/resumes
+
+# 2 Snowflake Feature Overview
 
 ## 2.1 Time Travel
 
