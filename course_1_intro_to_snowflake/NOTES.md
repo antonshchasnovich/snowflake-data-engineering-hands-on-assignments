@@ -93,6 +93,19 @@
   - Minimum `TARGET_LAG` is **1 minute** (not instantaneous like materialized views).
   - Read-only — no `INSERT`/`UPDATE`/`DELETE`/`TRUNCATE` directly against them.
 
+## 1.7 Semi-structured Data
+
+- **Main types:** `VARIANT`, `OBJECT`, `ARRAY`
+  - `VARIANT` – can hold any type of value (including nested `OBJECT`/`ARRAY`), similar to a JSON document; max **16 MB** of compressed data per row.
+  - `OBJECT` – key-value pairs (like a JSON object).
+  - `ARRAY` – ordered list of values (like a JSON array).
+- **Similar to JSON format:** values can be accessed by key, using dot notation (`column:key`) or the `GET` function.
+- **Typed elements:** every inner element of a `VARIANT` carries its own data type (e.g. `NUMBER`, `VARCHAR`, `OBJECT`, `ARRAY`) — checkable with `TYPEOF()` — which allows type-specific operations (e.g. math on numbers, string functions on strings).
+- **Casting:** values can be explicitly cast to/from `VARIANT` using `CAST`, `TO_VARIANT`, or the `::` operator.
+- **`FLATTEN` function:** converts nested semi-structured data (`VARIANT`/`OBJECT`/`ARRAY`) into a relational (row-based) format — commonly used together with `LATERAL` to join flattened values back to the original row.
+- **Parsing:** `PARSE_JSON` converts a JSON-formatted string into a `VARIANT`.
+- **Performance note:** for frequently queried fields (especially dates/timestamps stored as strings inside a `VARIANT`), it's often better to **flatten them into separate relational columns** for improved performance and lower storage cost.
+
 # 2 Snowflake Feature Overview
 
 ## 2.1 Time Travel
