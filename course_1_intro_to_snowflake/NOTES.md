@@ -46,6 +46,23 @@
 - **Unloading data:** `COPY INTO <stage>` to export table data out to a stage.
 - **File management commands:** `LIST` (view files in a stage), `REMOVE` (delete files from a stage).
 
+## 1.4 Databases and Schemas
+
+- **Hierarchy:** A **database** contains **schemas**, and a **schema** contains objects such as **tables**, views, stages, etc.
+- **Creation:** Both can be created via **Snowsight** or programmatically with SQL: `CREATE DATABASE` / `CREATE SCHEMA`.
+- **Naming objects:** Objects are referenced using a fully qualified **three-part name**: `database.schema.object`.
+- **`USE` statement:** Sets a default context so the three-part name isn't required each time:
+  - `USE DATABASE <name>`
+  - `USE SCHEMA <name>`
+- **Default schemas:** Every database automatically includes:
+  - `PUBLIC` – default schema for user-created objects
+  - `INFORMATION_SCHEMA` – read-only system views/metadata about the database's objects
+- **Other options:**
+  - `CREATE OR REPLACE` – recreate an object, replacing it if it already exists
+  - `DROP` / `UNDROP` – delete an object or restore it within the Time Travel retention period
+  - Databases/schemas can also be **transient** (no Fail-safe period, lower storage cost)
+  - Databases and schemas can also be **cloned** (ties into the Cloning topic)
+
 # 2 Snowflake Feature Overview
 
 ## 2.1 Time Travel
