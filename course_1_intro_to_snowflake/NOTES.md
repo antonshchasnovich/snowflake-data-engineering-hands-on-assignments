@@ -76,6 +76,23 @@
   - A temporary table can share a name with a permanent/transient table in the same schema — the temporary one takes precedence for that session.
   - Table type affects **storage cost** (Fail-safe and longer Time Travel increase cost).
 
+## 1.6 Views
+
+- **Definition:** A view is a saved SQL query that gets re-executed every time the view is queried (not stored as data itself).
+- **Types:**
+  - **Standard (non-materialized) view** – default type; results computed on the fly each time it's queried.
+  - **Materialized view** – results are pre-computed and physically stored, then automatically refreshed whenever the source table changes.
+  - **Secure view** – hides the underlying view definition/query logic from users who only have query access; used to protect sensitive logic or data.
+- **Materialized view limitations:**
+  - Can only query a **single table** — **joins (including self-joins) are not supported**.
+  - No window functions, `GROUP BY GROUPING SETS`/`ROLLUP`/`CUBE`, `ORDER BY`, `LIMIT`, or subqueries.
+  - Maintenance (keeping it updated) consumes credits, so costs can be higher than a standard view.
+- **Dynamic tables:**
+  - Similar concept to materialized views, but **support joins, unions, and more complex queries** across multiple tables.
+  - Refresh on a schedule controlled by `TARGET_LAG`, instead of being updated instantly — defines how long the data is allowed to lag behind the source after it changes.
+  - Minimum `TARGET_LAG` is **1 minute** (not instantaneous like materialized views).
+  - Read-only — no `INSERT`/`UPDATE`/`DELETE`/`TRUNCATE` directly against them.
+
 # 2 Snowflake Feature Overview
 
 ## 2.1 Time Travel
