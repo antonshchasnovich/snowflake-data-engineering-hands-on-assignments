@@ -63,6 +63,19 @@
   - Databases/schemas can also be **transient** (no Fail-safe period, lower storage cost)
   - Databases and schemas can also be **cloned** (ties into the Cloning topic)
 
+## 1.5 Tables
+
+- **Similar to Databases/Schemas:** Tables can be **created**, **dropped**, and **undropped** (restored within the Time Travel retention period).
+- **Creation:** Programmatically with SQL (`CREATE TABLE`), or via Snowsight (which also requires a table definition — columns, data types, etc. — provided through SQL or a similar structured input).
+- **Three types of tables:**
+  - **Permanent** – default type; long-term storage; Time Travel up to 90 days; has a 7-day Fail-safe period.
+  - **Transient** – persists beyond a session but has limited Time Travel (0–1 day) and **no Fail-safe** — lower storage cost, good for intermediate/non-critical data.
+  - **Temporary** – exists only for the duration of the session that created it; not visible to other users; dropped automatically when the session ends; no Fail-safe, minimal Time Travel.
+- **Cloning:** Tables can be cloned (ties into the Cloning topic) — `CREATE TABLE ... CLONE ...`.
+- **Other notes:**
+  - A temporary table can share a name with a permanent/transient table in the same schema — the temporary one takes precedence for that session.
+  - Table type affects **storage cost** (Fail-safe and longer Time Travel increase cost).
+
 # 2 Snowflake Feature Overview
 
 ## 2.1 Time Travel
