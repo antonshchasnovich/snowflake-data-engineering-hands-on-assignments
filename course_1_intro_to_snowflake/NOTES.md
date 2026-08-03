@@ -154,3 +154,38 @@
 - **Other settings:**
   - List of users/roles to notify
   - Credit quota and threshold percentages for each action
+
+## 2.4 User-Defined Functions (UDFs)
+
+- **Purpose:** Save and reuse custom logic that isn't available via Snowflake's built-in functions.
+- **Two return types:**
+  - **Scalar UDF** – returns a **single value** per input row.
+  - **UDTF (User-Defined Table Function)** – returns a **table** (0, 1, or multiple rows) per input row.
+- **Supported languages:** `SQL`, `JavaScript`, `Python`, `Java`, `Scala`
+  - **Snowpark** – API (mainly for Python/Java/Scala) that can also be used to define and deploy UDFs.
+
+### Example: Scalar UDF (SQL)
+```sql
+CREATE FUNCTION add_tax(price NUMBER, tax_rate NUMBER)
+RETURNS NUMBER
+AS
+$$
+  price * (1 + tax_rate)
+$$;
+
+SELECT add_tax(100, 0.2); -- returns 120
+```
+
+### Example: UDTF (SQL)
+```sql
+CREATE FUNCTION get_expensive_products(min_price NUMBER)
+RETURNS TABLE (product_name VARCHAR, price NUMBER)
+AS
+$$
+  SELECT product_name, price
+  FROM products
+  WHERE price >= min_price
+$$;
+
+SELECT * FROM TABLE(get_expensive_products(100));
+```
