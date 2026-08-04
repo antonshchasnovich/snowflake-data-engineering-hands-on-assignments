@@ -189,3 +189,35 @@ $$;
 
 SELECT * FROM TABLE(get_expensive_products(100));
 ```
+
+## 2.5 Stored Procedures
+
+- **Definition:** A set of actions (procedural logic) bundled together — vs. a UDF, which represents a single logical operation/value.
+- **Comparison to UDF:**
+  - A stored procedure is called as an **independent statement**: `CALL my_procedure(...)`
+  - A UDF is called **as part of a SQL statement/expression**, e.g. inside a `SELECT`, and multiple UDFs can be combined within a single query.
+- **Languages:** `SQL` (Snowflake Scripting), `JavaScript`, `Python`, `Java`, `Scala`.
+- **SQL syntax structure:** `DECLARE` (optional variables) → `BEGIN` ... `END`.
+- **Capabilities:** Can execute both **DDL** (`CREATE`, `ALTER`, `DROP`, etc.) and **DML** (`INSERT`, `UPDATE`, `DELETE`, etc.) statements — unlike UDFs, which cannot perform database operations.
+- **Rights model** (controls whose privileges the procedure runs with):
+  - **Owner's rights** (default) – runs with the privileges of the procedure's **owner**, regardless of who calls it.
+  - **Caller's rights** – runs with the privileges of the **caller**.
+- **Return value:** Can optionally `RETURN` a value (scalar, table, or e.g. a `VARIANT`/JSON), though procedures are mainly used for their side effects (actions performed), not for producing a reusable value like a UDF.
+
+### Example (SQL)
+```sql
+CREATE OR REPLACE PROCEDURE archive_old_orders(cutoff_date DATE)
+RETURNS STRING
+LANGUAGE SQL
+AS
+$$
+BEGIN
+  INSERT INTO orders_archive
+    SELECT * FROM orders WHERE order_date < :cutoff_date;
+  DELETE FROM orders WHERE order_date < :cutoff_date;
+  RETURN 'Archiving complete';
+END;
+$$;
+
+CALL archive_old_orders('2024-01-01');
+```
