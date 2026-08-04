@@ -221,3 +221,42 @@ $$;
 
 CALL archive_old_orders('2024-01-01');
 ```
+
+## 2.6 Role-Based Access Control (RBAC)
+
+- **Core components:**
+  - **Users** – individual accounts that connect to Snowflake.
+  - **Roles** – collections of privileges; assigned to users (not privileges directly).
+  - **Privileges** – permissions to perform specific actions on specific objects (e.g. `SELECT` on a table, `USAGE` on a warehouse).
+- **How it works:**
+  - **Privileges → granted to Roles**
+  - **Roles → granted to Users** (or to other roles)
+- **Role hierarchy:** Roles can be **nested** — one role can be granted to another, forming a hierarchy where a higher-level role inherits all privileges of the roles below it.
+- **Default system roles** (built-in, top of hierarchy down to bottom):
+  - `ACCOUNTADMIN` – top-level role, full account access
+  - `SECURITYADMIN` – manages grants and security objects (users, roles)
+  - `USERADMIN` – manages users and roles
+  - `SYSADMIN` – manages warehouses, databases, and other objects
+  - `PUBLIC` – default role automatically granted to every user
+- **Selecting an active role:**
+  - Manually, via **Snowsight** (role switcher in the UI)
+  - Programmatically with SQL: `USE ROLE <role_name>`
+- **Best practice:** Follow the **principle of least privilege** — grant only the privileges a role actually needs.
+
+### Examples
+```sql
+-- Create a role
+CREATE ROLE analyst;
+
+-- Grant a privilege to a role
+GRANT SELECT ON TABLE sales TO ROLE analyst;
+
+-- Grant a role to a user
+GRANT ROLE analyst TO USER john_doe;
+
+-- Grant a role to another role (hierarchy)
+GRANT ROLE analyst TO ROLE data_team;
+
+-- Switch active role in a session
+USE ROLE analyst;
+```
