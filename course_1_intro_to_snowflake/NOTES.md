@@ -287,3 +287,16 @@ df.show()  # triggers execution
   - **Back to Snowflake:** `.write.save_as_table("table_name")` – writes the DataFrame to a new or existing table (with modes like `overwrite`, `append`).
 - **Local development/testing:** The **Snowpark Python Local Testing Framework** (part of the `snowflake-snowpark-python` package) lets you create and run DataFrame operations **locally without connecting to a Snowflake account** — useful for unit testing and CI pipelines.
 - **Notebooks:** Working with Snowpark and DataFrames is especially easy inside **Notebooks** — Python cells automatically have access to the active Snowpark session, so a DataFrame can be created and used right away without any manual session setup (ties into the Notebooks topic).
+
+## 2.8 Snowflake Extension for Visual Studio Code
+
+- **Purpose:** Lets you connect to Snowflake and work with data directly from **VS Code** — write and run SQL worksheets without leaving the editor.
+- **Data catalog / object explorer:** Browse **databases, schemas, and tables** directly in the extension's sidebar, with a search bar to find objects by name.
+- **Actively maintained** by the Snowflake team, with regular updates.
+- **Productivity features:**
+  - **One-click copy** of an object's name from the catalog straight into the worksheet
+  - **One-click switch** of database/schema context
+  - **One-click role picker** to change the active role
+- **Authentication options:** username/password, **key-pair authentication**, **SSO/SAML**, or OAuth (via a `connections.toml` config file).
+- **Beyond plain SQL:** The extension also supports running **Snowpark Python** code and using **Snowflake Native App Framework** features.
+- **AI assistance:** Also integrates with **Snowflake CoCo** (formerly Cortex Code), Snowflake's AI coding agent, for AI-assisted development inside VS Code.
