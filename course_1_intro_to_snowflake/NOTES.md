@@ -260,3 +260,30 @@ GRANT ROLE analyst TO ROLE data_team;
 -- Switch active role in a session
 USE ROLE analyst;
 ```
+
+## 2.7 Snowpark DataFrames
+
+- **Snowpark:** A way to work with Snowflake data using familiar programming languages — **Python**, Java, or Scala — instead of writing raw SQL.
+- **Lazy evaluation:** Operations (filters, transformations, joins) are **not executed immediately**. They're only run when an **action** is triggered, e.g.:
+  - `.show()` – displays results
+  - `.collect()` – pulls results back as a list of rows
+  - `.to_pandas()` – converts to a pandas DataFrame
+  - `.count()`, `.take(n)` – also trigger execution
+- **Session:** The core object used to connect to and interact with Snowflake via Snowpark.
+  - Inside Snowflake (e.g. in a stored procedure/worksheet): `get_active_session()`
+  - From an external client: `Session.builder.configs(...).create()`
+- **DataFrame:** Represents tabular data (rows + columns), similar to a table — but built lazily as a set of transformations.
+- **Chainable operations:** Filtering and transformations can be chained together, e.g.:
+```python
+df = session.table("sales") \
+    .filter(col("amount") > 100) \
+    .select(col("customer_id"), col("amount")) \
+    .sort(col("amount").desc())
+
+df.show()  # triggers execution
+```
+- **Saving data:**
+  - **Locally:** `.to_pandas()` – converts the DataFrame into a local pandas DataFrame.
+  - **Back to Snowflake:** `.write.save_as_table("table_name")` – writes the DataFrame to a new or existing table (with modes like `overwrite`, `append`).
+- **Local development/testing:** The **Snowpark Python Local Testing Framework** (part of the `snowflake-snowpark-python` package) lets you create and run DataFrame operations **locally without connecting to a Snowflake account** — useful for unit testing and CI pipelines.
+- **Notebooks:** Working with Snowpark and DataFrames is especially easy inside **Notebooks** — Python cells automatically have access to the active Snowpark session, so a DataFrame can be created and used right away without any manual session setup (ties into the Notebooks topic).
