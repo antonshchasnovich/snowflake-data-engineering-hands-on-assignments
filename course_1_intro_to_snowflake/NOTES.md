@@ -300,3 +300,34 @@ df.show()  # triggers execution
 - **Authentication options:** username/password, **key-pair authentication**, **SSO/SAML**, or OAuth (via a `connections.toml` config file).
 - **Beyond plain SQL:** The extension also supports running **Snowpark Python** code and using **Snowflake Native App Framework** features.
 - **AI assistance:** Also integrates with **Snowflake CoCo** (formerly Cortex Code), Snowflake's AI coding agent, for AI-assisted development inside VS Code.
+
+## 2.9 Snowflake CLI
+
+- **Installation:** `pip install snowflake-cli` (verify with `snow --help`).
+- **Purpose:** Another way to work with Snowflake — a command-line tool geared towards developer workflows (in addition to plain SQL/data operations).
+- **Managing objects:** Create/update/describe/drop Snowflake objects (databases, schemas, tables, warehouses, etc.) via the `snow object` command group.
+```bash
+snow object create table my_table --columns "id INT, name STRING"
+snow object list table
+snow object drop table my_table
+```
+- **Running SQL:** Execute ad-hoc queries or `.sql` files via `snow sql`.
+```bash
+snow sql -q "SELECT * FROM my_table LIMIT 10"
+snow sql -f my_query.sql
+```
+- **Notebooks:** Manage and execute notebooks via `snow notebook`.
+```bash
+snow notebook execute my_notebook
+```
+- **Cortex (AI):** Access Snowflake's AI features via `snow cortex`, e.g. generating a response from an LLM.
+```bash
+snow cortex complete "Summarize this text: ..."
+```
+- **Git:** Manage Git repositories integrated with Snowflake via `snow git`, e.g. executing SQL/scripts stored in a repo.
+```bash
+snow git execute @my_repo/branches/main/script.sql
+```
+- **Other supported workloads:** Also manages **Snowpark** procedures/functions, **Streamlit in Snowflake**, **Snowpark Container Services**, and **Native Apps**.
+- **Connections/credentials:** Managed either via CLI commands (`snow connection add`) or a **config file** (`config.toml`), supporting multiple named connection profiles.
+- **Relation to SnowSQL:** Snowflake CLI is the modern replacement for the legacy **SnowSQL** client — Snowflake recommends migrating to it, since new features only go into Snowflake CLI going forward.
