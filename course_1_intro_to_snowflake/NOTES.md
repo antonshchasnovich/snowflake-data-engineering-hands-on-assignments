@@ -376,3 +376,51 @@ SELECT * FROM my_stream;
 - **Event tables** – capture logs and traces (e.g. from stored procedures, UDFs) emitted via `SYSTEM$LOG` or similar functions, for debugging and monitoring.
 - **DAG views** – visualize task graphs and their run history/dependencies in Snowsight.
 - **Snowflake Trail** – broader native observability feature covering pipeline monitoring, data quality, and lineage across ingestion/transformation/orchestration.
+
+## 3.2 Snowpipe
+
+- **Purpose:** Automatically and continuously ingest new files as they land in blob storage (e.g. **AWS S3**, Azure Blob Storage, GCS) — near-real-time, serverless file-based loading.
+
+### Setup components (for AWS S3)
+1. **S3 bucket** – where source files land.
+2. **IAM role** – with read access to the bucket, trusted to be assumed by Snowflake.
+3. **Storage integration** – a Snowflake object that securely links to the AWS role/credentials, without exposing them directly:
+```sql
+CREATE STORAGE INTEGRATION s3_int
+  TYPE = EXTERNAL_STAGE
+  STORAGE_PROVIDER = 'S3'
+  ENABLED = TRUE
+  STORAGE_AWS_ROLE_ARN = 'arn:aws:iam::123456789:role/my_role'
+  STORAGE_ALLOWED_LOCATIONS = ('s3://my-bucket/');
+```
+4. **External stage** – points to the S3 location, using the storage integration (ties into the Stages topic):
+```sql
+CREATE STAGE my_stage
+  URL = 's3://my-bucket/'
+  STORAGE_INTEGRATION = s3_int
+  FILE_FORMAT = (TYPE = 'CSV');
+```
+5. **Target table** – where the data will be copied to.
+6. **Pipe** – defines the `COPY INTO` logic that runs automatically on new files:
+```sql
+CREATE PIPE my_pipe
+  AUTO_INGEST = TRUE
+AS
+  COPY INTO my_table
+  FROM @my_stage;
+```
+7. **Event notification** – configured on the S3 bucket side, pointing to the **SQS queue ARN** Snowflake generates for the pipe (found via `DESC PIPE`) — this is what actually triggers ingestion when a new file arrives.
+
+### Useful commands
+- `SHOW PIPES` – list pipes.
+- `DESC PIPE my_pipe` – shows pipe details, including the **notification channel** (SQS ARN) needed for the S3 event notification.
+- `SELECT SYSTEM$PIPE_STATUS('my_pipe')` – check whether the pipe is running and pick up issues.
+- `ALTER PIPE my_pipe REFRESH` – manually trigger the pipe to check for files it may have missed.
+- Copy history / load errors can be checked via `COPY_HISTORY` and `VALIDATE_PIPE_LOAD`.
+
+### Snowpipe Streaming
+- Enables **row-based, real-time streaming ingestion** (vs. Snowpipe's file-based batching) — data is pushed directly via an API/SDK (originally **Java**, now also available for other languages), skipping the need to stage files first.
+- Good fit for streaming sources like **Kafka** or custom applications producing continuous event data.
+
+### Note on failed files
+- Snowpipe does **not automatically retry** a file that failed to load (e.g. due to a schema mismatch) — even after the underlying issue is fixed, the corrected file must be **loaded manually** with `COPY INTO`.
