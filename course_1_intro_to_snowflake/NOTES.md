@@ -331,3 +331,48 @@ snow git execute @my_repo/branches/main/script.sql
 - **Other supported workloads:** Also manages **Snowpark** procedures/functions, **Streamlit in Snowflake**, **Snowpark Container Services**, and **Native Apps**.
 - **Connections/credentials:** Managed either via CLI commands (`snow connection add`) or a **config file** (`config.toml`), supporting multiple named connection profiles.
 - **Relation to SnowSQL:** Snowflake CLI is the modern replacement for the legacy **SnowSQL** client — Snowflake recommends migrating to it, since new features only go into Snowflake CLI going forward.
+
+# 3 Overview of Builder Workloads: Data Engineering, AI/ML, Apps
+
+## 3.1 Data Engineering with Snowflake
+
+Snowflake provides native features across four areas of a data pipeline: **ingestion, transformation, orchestration, and observability**.
+
+### Ingestion
+- **Streaming:**
+  - **Snowpipe Streaming** – low-latency, row-by-row ingestion (e.g. from applications or Kafka via the **Kafka connector**).
+  - **Snowpipe** – event/file-based near-real-time ingestion, triggered automatically when new files land in a stage.
+- **Batch:** `COPY INTO` – bulk-loads files from a stage into a table (ties into the Stages topic).
+```sql
+COPY INTO my_table
+FROM @my_stage
+FILE_FORMAT = (TYPE = 'CSV');
+```
+- **Native connectors:** Prebuilt connectors for **SaaS applications** and **databases**, plus SDKs for programming languages (Python, Java, etc.) to build custom ingestion.
+- **Sharing instead of copying:** Data can be made available across accounts/regions via **Secure Data Sharing** (and **replication** for cross-region) without physically copying it.
+
+### Transformation
+- **Dynamic Tables**, **UDFs**, **Stored Procedures**, plain **SQL**, and **Snowpark DataFrames** — all ties into earlier topics.
+- Dynamic Tables in particular are built specifically for **declarative, incrementally-refreshed transformations** with automatic dependency handling.
+
+### Orchestration
+- **Tasks** – run SQL/Python logic on a **schedule** or trigger; can be **chained into a DAG (task graph)** with parent/child dependencies (up to 1,000 tasks per DAG).
+```sql
+CREATE TASK my_task
+  WAREHOUSE = my_wh
+  SCHEDULE = '5 MINUTE'
+AS
+  INSERT INTO summary_table SELECT ... FROM raw_table;
+```
+- **Streams** – track **incremental changes** (inserts/updates/deletes) on a table since the last time the stream was consumed, commonly used together with Tasks for **change-data-capture (CDC)** style pipelines.
+```sql
+CREATE STREAM my_stream ON TABLE raw_table;
+
+-- consume changes
+SELECT * FROM my_stream;
+```
+
+### Observability
+- **Event tables** – capture logs and traces (e.g. from stored procedures, UDFs) emitted via `SYSTEM$LOG` or similar functions, for debugging and monitoring.
+- **DAG views** – visualize task graphs and their run history/dependencies in Snowsight.
+- **Snowflake Trail** – broader native observability feature covering pipeline monitoring, data quality, and lineage across ingestion/transformation/orchestration.
