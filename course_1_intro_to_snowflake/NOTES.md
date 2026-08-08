@@ -424,3 +424,19 @@ AS
 
 ### Note on failed files
 - Snowpipe does **not automatically retry** a file that failed to load (e.g. due to a schema mismatch) — even after the underlying issue is fixed, the corrected file must be **loaded manually** with `COPY INTO`.
+
+## 3.3 Snowflake GenAI (Cortex)
+
+Snowflake groups its AI/ML capabilities under the **Cortex** umbrella — fully managed and serverless, no infrastructure/GPU management needed.
+
+- **AI & ML Studio** – no-code interface to access and experiment with AI/ML features directly in Snowsight.
+- **Document AI** – converts **unstructured documents** (e.g. scanned PDFs) into **structured data** (SQL table), built on Snowflake's own document-understanding model.
+- **Cortex Search** – **semantic search** engine for enterprise documents/data, commonly used to power **RAG (retrieval-augmented generation)** applications.
+- **Cortex Analyst** – translates **natural language into SQL**, letting business users query structured data conversationally.
+- **Cortex Fine-Tuning** – customize/adapt a base LLM (e.g. Meta, Mistral models) to your own data and domain-specific terminology.
+- **Snowpark Container Services** – fully custom compute environment for AI/ML workloads that need more flexibility than the built-in Cortex functions (e.g. custom models, GPUs).
+- **Other related features:**
+  - **Snowflake Copilot** – built-in AI assistant (SQL/text-to-SQL) that helps write queries and explore data inside Snowsight worksheets.
+  - **Cortex LLM Functions** – SQL functions (e.g. `AI_COMPLETE`) to call LLMs (Snowflake's own or external ones from OpenAI, Anthropic, Meta, etc.) directly within a query.
+  - **Cortex ML Functions** – out-of-the-box SQL functions for common ML tasks like forecasting, anomaly detection, and classification.
+  - **Cortex Agents** – developer platform for building multi-step, tool-using AI agents on top of Cortex Search/Analyst.
