@@ -440,3 +440,21 @@ Snowflake groups its AI/ML capabilities under the **Cortex** umbrella — fully 
   - **Cortex LLM Functions** – SQL functions (e.g. `AI_COMPLETE`) to call LLMs (Snowflake's own or external ones from OpenAI, Anthropic, Meta, etc.) directly within a query.
   - **Cortex ML Functions** – out-of-the-box SQL functions for common ML tasks like forecasting, anomaly detection, and classification.
   - **Cortex Agents** – developer platform for building multi-step, tool-using AI agents on top of Cortex Search/Analyst.
+
+## 3.4 Cortex CLI (`snow cortex`)
+
+- **What it is:** A dedicated command group within the **Snowflake CLI** (`snow` binary) for calling Cortex LLM features directly from the shell — no SQL needed.
+- **Main commands:**
+  - `snow cortex complete` – sends a prompt to a Cortex-hosted LLM and streams back the response.
+  - `snow cortex summarize` – summarizes a given piece of text.
+  - `snow cortex translate` – translates text between languages.
+  - `snow cortex sentiment` – returns a sentiment score for a piece of text.
+  - `snow cortex extract-answer` – extracts an answer to a question from unstructured text.
+
+### Example
+```bash
+snow cortex complete "How does a snowflake get its unique pattern?" --model claude-sonnet-4-6
+```
+
+- **Input options:** Prompt can be passed as inline text, or from a **file** (`--file`) — including a JSON file with multi-turn conversation history for chat-style usage.
+- **Use case:** Good for **scripting/automation** — repeatable, one-line LLM calls in shell scripts or CI pipelines, without writing SQL.
