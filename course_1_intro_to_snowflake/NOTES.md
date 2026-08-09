@@ -458,3 +458,34 @@ snow cortex complete "How does a snowflake get its unique pattern?" --model clau
 
 - **Input options:** Prompt can be passed as inline text, or from a **file** (`--file`) — including a JSON file with multi-turn conversation history for chat-style usage.
 - **Use case:** Good for **scripting/automation** — repeatable, one-line LLM calls in shell scripts or CI pipelines, without writing SQL.
+
+## 3.5 Cortex LLM Functions
+
+- **Main function:** `AI_COMPLETE` (newer, canonical function — the older `SNOWFLAKE.CORTEX.COMPLETE` still works but is being deprecated by end of 2026).
+- **Purpose:** Send natural language requests/prompts to an LLM directly from SQL.
+- **Key arguments:**
+  - `model` – name of the model to use (e.g. `'claude-sonnet-4-6'`, `'mistral-large'`, `'llama3-70b'`).
+  - `prompt` – the natural language input/instruction (can be a single string or a conversation with roles).
+  - `model_parameters` – object controlling generation behavior:
+    - `temperature` – controls **randomness/determinism** (0 = focused/deterministic, closer to 1 = more random/diverse).
+    - `top_p` – alternative to temperature; restricts the pool of possible next tokens.
+    - `max_tokens` – limits the length of the output.
+    - `guardrails` – enables **Cortex Guard** to filter unsafe/harmful responses (`TRUE`/`FALSE`).
+  - `response_format` – lets you request **structured output** (e.g. a JSON schema) instead of free text.
+
+### Example (SQL)
+```sql
+SELECT AI_COMPLETE(
+  model => 'claude-sonnet-4-6',
+  prompt => 'Summarize this customer review in one sentence: ...',
+  model_parameters => {'temperature': 0.2, 'max_tokens': 100, 'guardrails': TRUE}
+);
+```
+
+### Example (Snowflake CLI)
+```bash
+snow sql -q "SELECT AI_COMPLETE(model => 'claude-sonnet-4-6', prompt => 'How does a snowflake get its unique pattern?', model_parameters => {'temperature': 0.7, 'max_tokens': 50});"
+```
+
+- **Row-level usage:** The function can be applied to a **table column**, generating a completion for every row (e.g. summarizing each review in a `reviews` table).
+- **Multimodal support:** `AI_COMPLETE` also accepts **images/files** as input (e.g. classifying an image), not just text prompts.
