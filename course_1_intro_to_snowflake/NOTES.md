@@ -489,3 +489,32 @@ snow sql -q "SELECT AI_COMPLETE(model => 'claude-sonnet-4-6', prompt => 'How doe
 
 - **Row-level usage:** The function can be applied to a **table column**, generating a completion for every row (e.g. summarizing each review in a `reviews` table).
 - **Multimodal support:** `AI_COMPLETE` also accepts **images/files** as input (e.g. classifying an image), not just text prompts.
+
+## 3.6 Snowflake ML Overview
+
+### Cortex ML Functions
+Out-of-the-box, SQL-callable ML functions — no need to build/train models manually:
+
+- **Forecasting** – predicts future values of a metric based on historical **time-series** data.
+- **Classification** – sorts rows into two or more classes based on their most predictive features (e.g. flagging fraudulent transactions).
+- **Anomaly Detection** – flags values that differ from expectations, by comparing actual data to a forecast for the same period.
+- **Top Insights** – identifies which dimensions/values most significantly affect (explain unexpected changes in) a given metric over time.
+- Closely related: **Contribution Explorer** – performs root-cause analysis to find the biggest drivers of a metric.
+
+### AI & ML Studio
+- **Definition:** A **no-code interface** inside **Snowsight** for building, comparing, and deploying AI/ML capabilities without writing SQL or Python.
+- **What it's used for:**
+  - Wizard-guided setup for **Cortex ML functions** — e.g. click-through flows for creating a **Forecasting** or **Classification** model (pick role, warehouse, database/schema, target column, etc.), instead of writing SQL manually.
+  - **Comparing and evaluating multiple LLMs** side by side on the same prompt, to pick the best cost/performance fit for a use case.
+  - **Cortex Fine-Tuning** can also be launched from here instead of via SQL.
+- **Under the hood:** Studio-created models still generate standard SQL objects (e.g. a `FORECAST` model) — the no-code wizard is essentially a guided way to produce the same SQL you could write by hand.
+
+### Broader ML Workflow Components
+For more custom/advanced ML work, beyond the built-in Cortex functions:
+
+- **Snowpark ML (Modeling)** – Python API to **train custom ML models** directly on Snowflake data, using familiar frameworks (e.g. scikit-learn-style API).
+- **Model Registry** – centralized repository to **store, version, and manage** trained ML models (both custom and Cortex-based).
+- **Feature Store** – stores and manages reusable **features**, acting as a single source of truth so features stay consistent between model training and inference.
+- **Notebooks** – interactive environment to work with all of the above via SQL/Python in one place (ties into the Notebooks topic).
+- **Streamlit in Snowflake** – build and host **interactive web apps** (e.g. dashboards, model demos) directly on top of Snowflake data.
+- **Snowpark Container Services** – run custom workloads on **CPU/GPU-powered** compute for cases where the built-in ML tools aren't flexible enough (e.g. deep learning, custom model serving).
