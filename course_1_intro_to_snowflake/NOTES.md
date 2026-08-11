@@ -518,3 +518,32 @@ For more custom/advanced ML work, beyond the built-in Cortex functions:
 - **Notebooks** – interactive environment to work with all of the above via SQL/Python in one place (ties into the Notebooks topic).
 - **Streamlit in Snowflake** – build and host **interactive web apps** (e.g. dashboards, model demos) directly on top of Snowflake data.
 - **Snowpark Container Services** – run custom workloads on **CPU/GPU-powered** compute for cases where the built-in ML tools aren't flexible enough (e.g. deep learning, custom model serving).
+
+## 3.7 Snowpark ML Modeling
+
+- **Definition:** Snowflake's Python API for building and running traditional ML models directly on Snowflake data — no need to move data out of Snowflake.
+- **Library:** `snowflake-ml-python` (installed via pip/conda), providing the `snowflake.ml.modeling` module.
+- **API design:** Closely mirrors familiar Python ML libraries — **scikit-learn, XGBoost, LightGBM** — so existing ML code can often be adapted just by changing the imports.
+- **Main workflow stages:**
+  - **Prepare datasets** – feature engineering and preprocessing (e.g. scaling, encoding) run in a **distributed** way across Snowflake compute, working directly on Snowpark DataFrames.
+  - **Train model** – call `.fit()` on a model object, same pattern as scikit-learn; supports **distributed hyperparameter optimization** to train multiple candidate models in parallel.
+  - **Predict / classify** – call `.predict()` (or similar) on the trained model to run **inference/batch scoring** on new data, again without moving data out of Snowflake.
+- **Where it runs:** Training and preprocessing execute inside Snowflake's secure Python sandbox, using the active **virtual warehouse** (a **Snowpark-optimized warehouse** is recommended for memory-heavy training).
+- **Ties into other topics:** Trained models can be saved to the **Model Registry**, features can be sourced from the **Feature Store**, and the whole workflow is commonly run from **Notebooks**.
+
+### Example
+```python
+from snowflake.ml.modeling.preprocessing import StandardScaler
+from snowflake.ml.modeling.linear_model import LogisticRegression
+
+# Preprocess
+scaler = StandardScaler(input_cols=["age", "income"], output_cols=["age_s", "income_s"])
+scaled_df = scaler.fit(train_df).transform(train_df)
+
+# Train
+model = LogisticRegression(input_cols=["age_s", "income_s"], label_cols=["churn"])
+model.fit(scaled_df)
+
+# Predict
+predictions = model.predict(scaled_df)
+```
